@@ -172,21 +172,66 @@ If repeated AI attempts fail to solve the same underlying problem, stop the exec
 
 Use cross-model review or Best-of-N primarily for high-risk, expensive-to-reverse, or architecturally important decisions.
 
-## 12. SJC Usage
+## 12. SJC Execution Contract
 
-Use SJC when Codex or another LLM job is expected to be long-running, unattended, quota-sensitive, or requires reliable progress/terminal notification.
+SJC is mandatory for an AI execution when at least one of the following applies:
 
-SJC responsibilities may include:
+- the job is intended to continue while the user is not actively supervising it;
+- the job may run long enough that reliable progress or terminal notification is materially useful;
+- the job may be interrupted by Codex/LLM quota exhaustion and should continue automatically when execution becomes possible again;
+- losing the final execution result, failure reason, or notification would create meaningful manual recovery work.
 
-- authoritative execution state;
-- progress and terminal reporting;
-- durable notification delivery;
-- result artifacts;
-- quota state;
-- pause on quota exhaustion;
-- automatic resume when execution becomes possible again.
+Do not use SJC for ChatGPT-only work, short interactive tasks, or small Codex runs that are expected to finish while actively supervised and do not need lifecycle persistence.
 
-SJC is an observability and lifecycle layer, not another reasoning stage. Do not extend it into functionality that belongs to ChatGPT, Codex, or OMC unless repeated real-world evidence shows the separation is insufficient.
+### Before Starting an SJC Job
+
+The implementation direction and bounded mission must already be defined before execution starts. SJC does not decide architecture, decompose product work, or invent acceptance criteria.
+
+For repository-changing work, the execution must already have a safe Git target such as an isolated branch or worktree.
+
+The SJC job must identify enough context to recover and understand the execution without reconstructing it from chat history. At minimum record or reference:
+
+- the project and repository;
+- the bounded mission or mission identifier;
+- the execution mechanism, such as direct Codex or OMC;
+- the working branch/worktree when repository changes are involved;
+- where the required result evidence or artifacts will be available.
+
+Do not duplicate large prompts or project history in SJC when a stable repository artifact can be referenced instead.
+
+### During Execution
+
+Once a job is started under SJC, SJC is the authoritative source for that execution's lifecycle state.
+
+Do not create duplicate replacement jobs merely because the original job is slow, temporarily waiting, or quota-blocked. First inspect its authoritative state and recover/resume the existing execution when possible.
+
+Progress reporting must be concise and milestone-oriented. Do not generate frequent low-value updates solely to prove that the job is alive.
+
+The user should not be required to poll logs or manually relay routine status between SJC, Codex/OMC, and ChatGPT when the available integration can provide that status automatically.
+
+Quota exhaustion is a waiting condition, not an implementation failure, when the job is otherwise resumable. Preserve execution state and automatically continue when quota becomes available if the execution mechanism supports safe resume.
+
+If execution requires a genuine human decision, permission, credential, or subjective validation, pause at a recoverable boundary and notify the user with the smallest decision needed to continue.
+
+### Terminal Results
+
+Every terminal SJC result must preserve enough evidence to understand what happened without relying on the agent's summary alone.
+
+For a successful execution, retain or reference the relevant implementation evidence defined by the mission, such as commit/branch state, diff, tests, checks, logs, or generated artifacts.
+
+For a failed execution, retain or reference the failure reason and the diagnostic evidence needed for the next decision. Do not blindly restart a failed job without first determining whether the cause was transient, quota-related, environmental, or an implementation/plan failure.
+
+A successful SJC terminal state means the managed execution completed successfully. It does **not** by itself mean the software task is accepted or ready to merge.
+
+ChatGPT or the designated reviewer must still inspect the required repository state and verification evidence before the task is considered complete under these project rules.
+
+### SJC Boundary
+
+SJC may own execution state, progress and terminal reporting, durable notification delivery, result artifacts, quota state, pause/resume, and automatic continuation.
+
+SJC must remain orthogonal to reasoning and implementation orchestration. ChatGPT owns architectural/planning decisions; Codex performs bounded implementation; OMC coordinates complex implementation flows.
+
+Do not extend SJC into functionality that belongs to those layers unless repeated real-world evidence demonstrates that the separation is insufficient.
 
 ## 13. Internal Tooling Firewall
 
@@ -228,7 +273,9 @@ A substantial task is complete only when:
 - unresolved risks or deviations are stated clearly;
 - subjective or visual checks are performed when the task requires them.
 
-Do not declare completion based only on an agent summary.
+An SJC terminal success satisfies only the execution-lifecycle part of this definition. It does not replace implementation verification or review.
+
+Do not declare completion based only on an agent summary or SJC terminal state.
 
 ## Project-Specific Overrides
 
