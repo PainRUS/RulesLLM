@@ -2,16 +2,16 @@
 
 ## 1. Purpose
 
-These rules exist to help produce working software with the minimum process required for reliable results.
+These rules exist to produce working software with the minimum process required for reliable results.
 
-Do not optimize the development workflow for its own sake. Internal tooling and process changes must solve observed recurring friction, reliability risk, or meaningful manual work.
+Do not optimize the development workflow for its own sake. Process and internal tooling must solve observed recurring friction, a meaningful reliability or safety risk, recurring manual work, or a capability gap that existing tools cannot reasonably cover.
 
 ## 2. Communication and Documentation
 
 - Technical documentation stored in the repository is written in technical English.
 - User-facing communication is written in Russian unless explicitly requested otherwise.
-- User-facing updates should explain state, decisions, risks, and the next meaningful step without unnecessary low-level detail.
-- Important technical knowledge must not exist only in chat history. Persist durable decisions and project knowledge in the repository.
+- User-facing updates should explain state, decisions, risks, and the next meaningful step without unnecessary low-level detail unless deeper technical detail is requested.
+- Important technical knowledge must not exist only in chat history. Persist durable architecture, decisions, testing instructions, and project state in the repository.
 
 ## 3. Roles
 
@@ -25,7 +25,9 @@ Do not use the user as a manual transport layer between ChatGPT, Codex, OMC, Git
 
 ChatGPT acts as co-architect, analyst, planner, reviewer, and technical partner.
 
-Use ChatGPT directly for architecture, analysis, research, planning, documentation, review, troubleshooting, and small technical tasks that do not justify substantial repository work.
+Use ChatGPT directly for architecture, analysis, research, planning, documentation, review, troubleshooting, and small technical tasks that do not justify substantial repository execution.
+
+When connected repository tools are sufficient, ChatGPT may inspect repository state directly for analysis or review without launching Codex.
 
 ChatGPT should challenge materially weak solutions instead of merely agreeing with them.
 
@@ -33,13 +35,13 @@ ChatGPT should challenge materially weak solutions instead of merely agreeing wi
 
 Codex executes bounded implementation missions inside a repository.
 
-Use Codex when meaningful repository changes, codebase exploration, implementation, or automated verification are required.
+Use Codex when the task requires meaningful repository execution such as implementation, substantial codebase exploration, automated changes, or repository-level verification that is not efficient to perform directly in ChatGPT.
 
 ### OMC
 
 OMC is the orchestration layer for complex repository implementation.
 
-Use OMC when the work benefits from multiple dependent bounded missions, parallel execution, or a coordinated implementation-test-review flow.
+Use OMC when the work materially benefits from multiple dependent bounded missions, parallel execution, or a coordinated implementation-test-review flow.
 
 Do not use OMC when one bounded Codex mission is sufficient.
 
@@ -57,23 +59,15 @@ Choose the smallest execution path that can reliably complete the task.
 
 ### ChatGPT-only
 
-Use when the task is primarily:
-
-- architecture or design;
-- analysis or research;
-- planning;
-- documentation;
-- review;
-- explanation or troubleshooting;
-- a small local technical task that does not require substantial repository work.
+Use when the task is primarily architecture, analysis, research, planning, documentation, review, explanation, troubleshooting, or a small technical task that does not require substantial repository execution.
 
 ### Direct Codex
 
 Use when:
 
-- the architecture or intended behavior is already sufficiently clear;
-- the task is self-contained enough to express as one bounded mission;
-- repository changes and verification are required.
+- the architecture or intended behavior is sufficiently clear;
+- the task can be expressed as one bounded mission;
+- meaningful repository execution and verification are required.
 
 ### OMC + Codex
 
@@ -81,34 +75,38 @@ Use when:
 
 - implementation naturally splits into multiple dependent missions;
 - parallel work provides real value;
-- a coordinated implementation and review workflow is materially useful;
-- one open-ended Codex mission would otherwise become too large or ambiguous.
+- coordinated implementation and review materially reduce risk or manual work;
+- one Codex mission would otherwise become too large or ambiguous.
 
-### Architecture First
+Do not route a task through additional layers merely because those tools are available.
+
+## 5. Architecture Before Substantial Implementation
 
 Before substantial architectural, behavioral, cross-cutting, migration, security-sensitive, or difficult-to-reverse changes, resolve the direction in ChatGPT first.
 
-Implementation should begin only when the chosen approach, important constraints, risks, and acceptance criteria are sufficiently defined.
+Implementation should begin only when the chosen approach, important constraints, material risks, and acceptance criteria are sufficiently defined.
+
+Do not make Codex rediscover or renegotiate settled product and architecture decisions without evidence that those decisions are invalid or incompatible with the repository state.
 
 Experiments may use a lighter process when the cost of failure is low.
 
-## 5. Mission Contract
+## 6. Mission Contract
 
-Every substantial Codex or OMC mission should define:
+Every substantial Codex or OMC mission must define enough of the following to prevent uncontrolled scope expansion:
 
 - **Goal** — the intended outcome;
 - **In scope** — what may be changed;
 - **Out of scope** — what must not be changed;
-- **Acceptance criteria** — how PASS is determined;
+- **Acceptance criteria** — how success is determined;
 - **Required evidence** — what must be shown or verified;
 - **Important constraints** — compatibility, architecture, safety, or product constraints;
 - **Stop conditions** — when the agent should stop instead of expanding or repeatedly patching the task.
 
-Avoid open-ended instructions such as "improve everything necessary" or "fix whatever you find" unless broad exploration is explicitly the task.
+Avoid open-ended instructions such as "improve everything necessary" or "fix whatever you find" unless broad exploration is explicitly the mission.
 
-Agents may inspect enough of the repository to validate implementation assumptions, but they should not re-solve settled product or architectural decisions without evidence that those decisions are invalid.
+Agents may inspect enough of the repository to validate implementation assumptions. Exploration must support the mission rather than silently expanding it.
 
-## 6. Model and Reasoning Economy
+## 7. Model and Reasoning Economy
 
 Choose the minimum model capability and reasoning effort that can reliably complete the mission without reducing result quality.
 
@@ -120,17 +118,17 @@ Typical guidance:
 
 Use stronger reasoning only where uncertainty or consequence justifies it. Do not run an entire workflow at maximum effort when only one stage requires it.
 
-Quota savings must never be achieved by knowingly lowering required implementation quality or verification quality.
+Quota savings must never be achieved by knowingly lowering required implementation or verification quality.
 
-## 7. Context Economy
+## 8. Context Economy
 
 Keep durable project context in the repository and provide agents with just-in-time context for the current mission.
 
-Do not repeatedly send the entire project history when the task needs only a small subset of it.
+Do not repeatedly send the entire project history when the task needs only a subset of it.
 
 Prefer repository artifacts such as architecture documents, decision records, test instructions, and current-state notes over reconstructing context from chat memory.
 
-## 8. Git Safety
+## 9. Git Safety
 
 Substantial AI implementation must use an isolated branch, worktree, or equivalent safe workspace.
 
@@ -138,9 +136,9 @@ Do not make substantial implementation changes directly on the stable `main` wor
 
 Before accepting or merging work, inspect the actual repository state and relevant diff.
 
-A statement from an AI agent that work is complete or tests passed is not evidence by itself.
+An AI statement that work is complete or tests passed is not evidence by itself.
 
-## 9. Verification
+## 10. Verification
 
 Verification must be proportional to the task and based on factual evidence.
 
@@ -155,36 +153,28 @@ Relevant evidence may include:
 - logs;
 - visual verification for user-facing behavior.
 
-Do not run unrelated verification solely to satisfy process ceremony.
+Run the checks required to establish confidence in the changed behavior. Do not add unrelated verification solely to satisfy process ceremony.
 
 If behavior changes materially, update the relevant repository documentation in the same workstream.
 
-## 10. Review Policy
+## 11. Review and Stop-Loss
 
-Use independent LLM review when the expected value justifies the additional quota and time.
+Use independent LLM review when the expected reduction in risk justifies the additional quota and time.
 
-The default maximum is two LLM review/fix waves:
+The normal limit is two review/fix waves:
 
-1. implementation plus independent review;
-2. requested fixes plus final verification.
+1. review the implementation and identify required fixes;
+2. apply the fixes and perform final verification or final independent review when justified by risk.
 
-If fundamental problems remain after the second wave, stop iterative patching and return the evidence to ChatGPT for diagnosis, replanning, or architectural reconsideration.
+If fundamental problems remain after the second wave, stop iterative patching. Return the evidence to ChatGPT for diagnosis, replanning, or architectural reconsideration before starting a new bounded mission.
 
-A new plan may start a new bounded mission; this rule prevents blind patch loops, not deliberate rework after diagnosis.
+If repeated AI attempts fail to solve the same underlying problem, stop the execution loop even before the review limit is reached. Collect the evidence, identify what remains unknown, and materially change the diagnosis or plan before spending more quota.
 
 Use cross-model review or Best-of-N primarily for high-risk, expensive-to-reverse, or architecturally important decisions.
 
-## 11. Stop-Loss Rule
-
-If repeated AI attempts fail to solve the same underlying problem, stop the execution loop.
-
-Collect the current evidence, identify what is still unknown, reassess the diagnosis in ChatGPT, and create a new bounded mission only after the problem framing changes materially.
-
-Do not spend additional quota on agent thrashing.
-
 ## 12. SJC Usage
 
-Long-running or unattended Codex/LLM work should use SJC when observability, notification, quota waiting, or automatic continuation is materially useful.
+Use SJC when Codex or another LLM job is expected to be long-running, unattended, quota-sensitive, or requires reliable progress/terminal notification.
 
 SJC responsibilities may include:
 
@@ -196,11 +186,11 @@ SJC responsibilities may include:
 - pause on quota exhaustion;
 - automatic resume when execution becomes possible again.
 
-Do not extend SJC into functionality that belongs to ChatGPT, Codex, or OMC unless a repeated real-world need demonstrates that the existing separation is insufficient.
+SJC is an observability and lifecycle layer, not another reasoning stage. Do not extend it into functionality that belongs to ChatGPT, Codex, or OMC unless repeated real-world evidence shows the separation is insufficient.
 
 ## 13. Internal Tooling Firewall
 
-Do not build internal infrastructure for hypothetical future problems.
+Do not build infrastructure for hypothetical future problems.
 
 Before adding a new workflow layer or internal capability, require at least one of the following:
 
@@ -209,9 +199,9 @@ Before adding a new workflow layer or internal capability, require at least one 
 - recurring manual work that automation would materially remove;
 - a capability that existing tools cannot reasonably provide.
 
-Prefer improving how existing tools are used over building a new orchestrator or abstraction layer.
+Prefer improving how existing tools are used over creating another orchestrator or abstraction layer.
 
-After an internal tool reaches the minimum capability needed for real use, prioritize dogfooding it on actual product work before expanding it further.
+After an internal tool reaches the minimum capability needed for real use, prioritize using it on actual product work before expanding it further.
 
 ## 14. Human Decision Boundary
 
@@ -239,16 +229,6 @@ A substantial task is complete only when:
 - subjective or visual checks are performed when the task requires them.
 
 Do not declare completion based only on an agent summary.
-
-## 16. Guiding Principle
-
-Use the smallest process that reliably produces the required result:
-
-- ChatGPT when ChatGPT is enough;
-- Codex when one bounded coding mission is enough;
-- OMC when implementation genuinely requires orchestration;
-- SJC when execution genuinely requires observability or unattended continuation;
-- human intervention only when a human decision is genuinely required.
 
 ## Project-Specific Overrides
 
