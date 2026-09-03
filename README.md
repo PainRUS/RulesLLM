@@ -1,31 +1,36 @@
 # RulesLLM
 
-Canonical reusable rules template for software projects developed with LLM assistance.
+Reusable rules template for software projects developed with LLM-assisted workflows.
 
-The goal of this repository is to keep the development process simple, safe, observable, and economical without reducing implementation quality.
+## Purpose
 
-## Usage
+This repository contains a compact baseline for projects where ChatGPT, Codex, OMC, SJC, Git, and human review may participate in the development workflow.
 
-1. Copy `PROJECT_RULES.md` into the project's instruction set or repository documentation.
-2. Fill only the `Project-Specific Overrides` section with facts that are truly specific to that project.
-3. Keep durable architecture, decisions, testing instructions, and current project state in the project repository rather than in chat history.
-4. Add new process rules only after a real recurring problem, meaningful risk, or unavoidable capability gap has been observed.
-5. Project-specific rules may override this template only when the override is explicit and justified by the project.
+The template is intentionally opinionated about role boundaries, evidence, quota economy, and stopping conditions, while avoiding project-specific implementation details.
 
-## Files
+## Canonical Template
 
-- `PROJECT_RULES.md` — reusable development rules and project-specific override template.
+Use [`PROJECT_RULES.md`](PROJECT_RULES.md) as the starting point for a project's LLM working rules.
 
-## Execution Model
+When adopting it:
 
-Use the smallest execution path that reliably produces the required result.
+1. copy the template into the target project's authoritative documentation or project instructions;
+2. fill only the `Project-Specific Overrides` section with constraints that materially affect that project;
+3. keep durable technical decisions in the target repository rather than in chat history;
+4. remove references to tools that the project genuinely does not use instead of inventing placeholder process around them.
 
-Typical routing:
+The template also defines a mandatory SJC execution contract for long-running, unattended, quota-sensitive, or notification-critical AI jobs. SJC manages execution lifecycle and evidence delivery; it does not replace planning, implementation orchestration, or verification.
 
-`ChatGPT -> Codex`
+## Design Goals
 
-or, for genuinely complex implementation:
+- use the smallest reliable execution path;
+- keep architecture decisions separate from implementation orchestration;
+- minimize unnecessary model and reasoning cost without lowering required quality;
+- prevent agent thrashing and endless review loops;
+- keep humans out of routine transport and status work;
+- verify results from repository state, tests, runtime, and other factual evidence;
+- avoid building internal tooling for hypothetical problems.
 
-`ChatGPT -> OMC -> bounded Codex missions`
+## Status
 
-SJC is not another reasoning stage. It observes and manages the lifecycle of long-running or unattended execution when needed.
+The initial template is under review before adoption as the shared baseline for LLM-assisted projects.
