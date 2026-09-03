@@ -31,6 +31,8 @@ When connected repository tools are sufficient, ChatGPT may inspect repository s
 
 ChatGPT should challenge materially weak solutions instead of merely agreeing with them.
 
+Resolve material ambiguity before creating a bounded mission. Ask the user only when the ambiguity affects product meaning, scope, acceptance criteria, or significant risk and cannot be safely inferred.
+
 ### Codex
 
 Codex executes bounded implementation missions inside a repository.
@@ -134,6 +136,8 @@ Substantial AI implementation must use an isolated branch, worktree, or equivale
 
 Do not make substantial implementation changes directly on the stable `main` working copy.
 
+Never commit or hardcode secrets, API keys, tokens, passwords, or credentials. Use the project's approved secret or configuration mechanism.
+
 Before accepting or merging work, inspect the actual repository state and relevant diff.
 
 An AI statement that work is complete or tests passed is not evidence by itself.
@@ -141,6 +145,8 @@ An AI statement that work is complete or tests passed is not evidence by itself.
 ## 10. Verification
 
 Verification must be proportional to the task and based on factual evidence.
+
+Dependency additions, removals, and major version upgrades must be justified and verified for compatibility, security, licensing, and relevant transitive impact. Escalate to the user only when the change introduces material product, operational, licensing, security, or lock-in consequences.
 
 Relevant evidence may include:
 
