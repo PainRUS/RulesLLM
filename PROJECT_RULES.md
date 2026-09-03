@@ -92,15 +92,15 @@ Experiments may use a lighter process when the cost of failure is low.
 
 ## 6. Mission Contract
 
-Every substantial Codex or OMC mission must define enough of the following to prevent uncontrolled scope expansion:
+Every substantial Codex or OMC mission must define at minimum:
 
 - **Goal** — the intended outcome;
-- **In scope** — what may be changed;
-- **Out of scope** — what must not be changed;
+- **Scope boundaries** — what is in scope and what must not be changed;
 - **Acceptance criteria** — how success is determined;
 - **Required evidence** — what must be shown or verified;
-- **Important constraints** — compatibility, architecture, safety, or product constraints;
 - **Stop conditions** — when the agent should stop instead of expanding or repeatedly patching the task.
+
+Add compatibility, architecture, safety, product, or other constraints when they materially affect implementation.
 
 Avoid open-ended instructions such as "improve everything necessary" or "fix whatever you find" unless broad exploration is explicitly the mission.
 
